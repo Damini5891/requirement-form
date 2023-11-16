@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+form {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+form div {
+    margin: 10px 0;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"], input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="file"] {
+    cursor: pointer;
+}
+
+button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.frame {
+    border: 2px solid #333;
+    margin-top: 20px;
+    padding: 10px;
+}
+
+#frame-content {
+    text-align: center;
+}
+
+#frame-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Form with Requirements</h1>
+    <form id="myForm" enctype="multipart/form-data">
+        <div>
+            <label for="mobile">Mobile Number:</label>
+            <input type="text" id="mobile" name="mobile" pattern="[0-9]{10}" required>
+        </div>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="name" required>
+        </div>
+        <div>
+            <label for="image">Image (JPEG only):</label>
+            <input type="file" id="image" name="image" accept=".jpg, .jpeg" required>
+        </div>
+        <button type="button" id="submitBtn">Test</button>
+        <button type="button" id="revealBtn" style="display: none;">Reveal Original Number</button>
+        <button type="button" id="refreshBtn">Refresh</button>
+    </form>
+    <div id="result" class="frame">
+        <div id="frame-content">
+            <p id="result-name"></p>
+            <p id="current-date"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function() {
+    const mobileInput = document.getElementById('mobile');
+    const mobile = mobileInput.value;
+    const name = document.getElementById('name').value;
+    const imageInput = document.getElementById('image');
+    const image = imageInput.files[0];
+
+    if (/^\d{10}$/.test(mobile)) {
+        const hiddenMobile = mobile.replace(/^(\d{5}).*/, '$1*****');
+        mobileInput.value = hiddenMobile;
+        mobileInput.setAttribute('data-original-value', mobile);
+        document.getElementById('revealBtn').style.display = 'block';
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.alt = 'User Image';
+        document.getElementById('frame-content').appendChild(img);
+    };
+    reader.readAsDataURL(image);
+
+    const frame = document.getElementById('result');
+    frame.style.display = 'block';
+    const resultName = document.getElementById('result-name');
+    resultName.textContent = 'Name: ' + name;
+    const currentDate = new Date().toLocaleDateString();
+    document.getElementById('current-date').textContent = 'Date: ' + currentDate;
+
+    const randomColor = '#' + (Math.random().toString(16) + '000000').slice(2, 8);
+    frame.style.borderColor = randomColor;
+});
+
+document.getElementById('revealBtn').addEventListener('click', function() {
+    const mobileInput = document.getElementById('mobile');
+    const originalMobile = mobileInput.getAttribute('data-original-value');
+    mobileInput.value = originalMobile;
+    this.style.display = 'none';
+});
+
+document.getElementById('refreshBtn').addEventListener('click', function() {
+    document.getElementById('myForm').reset();
+    document.getElementById('revealBtn').style.display = 'none';
+    document.getElementById('result').style.display = 'none';
+});
+
+    </script>
+</body>
+</html>
